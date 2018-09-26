@@ -278,16 +278,25 @@ public class AirMapMarker extends AirMapFeature {
             // creating a bitmap from an arbitrary view
             if (iconBitmapDescriptor != null) {
                 Bitmap viewBitmap = createDrawable();
-                int width = Math.max(iconBitmap.getWidth(), viewBitmap.getWidth());
-                int height = Math.max(iconBitmap.getHeight(), viewBitmap.getHeight());
-                Bitmap combinedBitmap = Bitmap.createBitmap(width, height, iconBitmap.getConfig());
-                Canvas canvas = new Canvas(combinedBitmap);
-                canvas.drawBitmap(iconBitmap, 0, 0, null);
-                canvas.drawBitmap(viewBitmap, 0, 0, null);
-                return BitmapDescriptorFactory.fromBitmap(combinedBitmap);
+                if(viewBitmap == null){
+                    return BitmapDescriptorFactory.defaultMarker(this.markerHue);
+                }else {
+                    int width = Math.max(iconBitmap.getWidth(), viewBitmap.getWidth());
+                    int height = Math.max(iconBitmap.getHeight(), viewBitmap.getHeight());
+                    Bitmap combinedBitmap = Bitmap.createBitmap(width, height, iconBitmap.getConfig());
+                    Canvas canvas = new Canvas(combinedBitmap);
+                    canvas.drawBitmap(iconBitmap, 0, 0, null);
+                    canvas.drawBitmap(viewBitmap, 0, 0, null);
+                    return BitmapDescriptorFactory.fromBitmap(combinedBitmap);
+                }
             } else {
                 try{
-                    return BitmapDescriptorFactory.fromBitmap(createDrawable());
+                    Bitmap bitmap = createDrawable();
+                    if(bitmap == null){
+                        return BitmapDescriptorFactory.defaultMarker(this.markerHue);
+                    }else{
+                        return BitmapDescriptorFactory.fromBitmap(bitmap);
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                     return BitmapDescriptorFactory.defaultMarker(this.markerHue);
@@ -351,11 +360,14 @@ public class AirMapMarker extends AirMapFeature {
         int width = this.width <= 0 ? 100 : this.width;
         int height = this.height <= 0 ? 100 : this.height;
         this.buildDrawingCache();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        this.draw(canvas);
-
+        Bitmap bitmap = null;
+        try {
+            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            this.draw(canvas);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return bitmap;
     }
 
