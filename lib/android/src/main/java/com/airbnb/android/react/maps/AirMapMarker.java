@@ -365,7 +365,7 @@ public class AirMapMarker extends AirMapFeature {
             bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             this.draw(canvas);
-        }catch (Exception e){
+        }catch (OutOfMemoryError e){
             e.printStackTrace();
         }
         return bitmap;
